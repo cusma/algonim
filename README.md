@@ -28,7 +28,7 @@ AlgoNim is played entirely from the **command line interface**.
 AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is the **Opponent**.
 
 Rules are trivial:
-1. The Dealer chooses the number **N** of pieces to put on the game table for the match;
+1. The Dealer chooses the number **N** of pieces to be palced on the game table for the match;
 2. The Dealer chooses the number **M** of pieces that can be removed at the most from the game table in each turn;
 3. Alice and Bob choose who moves first;
 4. On each turn each player removes **at least 1** and **at the most M** pieces from the game table;
