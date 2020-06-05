@@ -99,19 +99,27 @@ Options:
 ```
 
 ### Step 1 - Match set up (Dealer)
-In the first step the Dealer sets up the match, generating the ASAs + ASC1s game architecture. To set up the match the Dealer may choose the following options (or left as default values otherwise):
-1. `[--bet-amount=<ba>]` is the 
+In the first step the Dealer sets up the match, generating the ASAs + ASC1s game architecture. To set up the match the Dealer may choose the following options (or left them void for default values otherwise):
+1. `[--bet-amount=<ba>]` is the bet proposal expressed in microALGO;
+2. `[--pieces=<ps>]` is the number of pieces that the Dealer distributes on the Game Table;
+3. `[--max-removal=<mr>]` is the maximum number of pieces that can be removed from the Game Table on each turn by the players;
+
+**Input**
 ```bash
 algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
                    [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
 ```
-Match's data will be packed in `algonim.match` file. 
+**Output**
+The scripts generates both the `*.teal` and `*.tealc` ASC1s files and the `algonim.match` in which match's data are packed. The Dealer than sends `algonim.match` to the Opponent.
 
-## AlgoNim architecture
-AlgoNim architecture is composed by following Algorand features:
-1. Standalone Account - Alice (acts as Dealer too)
-2. Standalone Account - Bob
-3. Algorand Smart Contract - Game Table
-4. Algorand Smart Contract - Sink
-5. Algorand Smart Contract - Alice's Bet Escrow
-6. Algorand Smart Contract - Bob's Bet Escrow
+### Step 2 - Join the match (Opponent)
+To join the match the Opponent must decide whether accept the Dealer bet proposal or not. Accepting the proposal the Opponet will Opt-In the match's ASAs and fund both the Bet Escrows with the same amount issuing an Atomic Transfer (already signed by the Dealer).
+
+**Input**
+```bash
+algonim.py join <opponent_mnemonic>
+```
+**Output**
+Match's ASAs Opt-In and betting AT.
+
+### Step 3 - Play turn (Dealer or Opponent)
