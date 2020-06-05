@@ -39,11 +39,12 @@ Alice and Bob may choose **betting** some ALGOs for the match. Further implement
 
 ## Install AlgoNim
 ### Step 1 - Python modules
-AlgoRithm uses the following Python 3 modules:
+AlgoRithm uses the following Python 4 modules:
 1. `msgpack`
 2. `docopt`
 3. `algosdk`
 4. `pyteal`
+
 so you need to install them (if not already present):
 
 ```
