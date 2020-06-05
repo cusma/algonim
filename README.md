@@ -63,7 +63,7 @@ Attention: setting `$ALGORAND_DATA` on your node you choose playing AlgoNim on M
 Copy `algonim.py` into your `node` directory (the same of `goal`).
 
 ## How to play
-Playing AlgoNim from yout CLI is very easy, just ask for help:
+Playing AlgoNim from your CLI is pretty easy, just ask for help:
 **Input**
 ```bash
 $ python3 algonim.py --help
@@ -99,7 +99,13 @@ Options:
 ```
 
 ### Step 1 - Match set up (Dealer)
-
+In the first step the Dealer sets up the match, generating the ASAs + ASC1s game architecture. To set up the match the Dealer may choose the following options (or left as default values otherwise):
+1. `[--bet-amount=<ba>]` is the 
+```bash
+algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
+                   [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
+```
+Match's data will be packed in `algonim.match` file. 
 
 ## AlgoNim architecture
 AlgoNim architecture is composed by following Algorand features:
