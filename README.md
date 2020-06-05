@@ -1,4 +1,4 @@
-```
+```bash
       _       __                 ____  _____   _               
      / \     [  |               |_   \|_   _| (_)              
     / _ \     | |  .--./)  .--.   |   \ | |   __   _ .--..--.  
@@ -8,7 +8,7 @@
                  ( ( __))                                      
                                                        by cusma
 ```
-# AlgoNim: let's play a crypto-Nim on Algorand
+# AlgoNim: let's play a crypto-Nim on Algorand from the CLI
 
 ## What's Nim?
 [**Nim**](https://en.wikipedia.org/wiki/Nim) is a very simple mathematical game of strategy for two players. With a lot of imagination let's name them **Alice** and **Bob**.
@@ -20,7 +20,9 @@ Just to be fair from the very beginning: Nim is a **zero-sum game** and has been
 ## What's AlgoNim?
 **AlgoNim** is a cryptographic version of Nim that runs on [Algorand](https://algorand.foundation/) Layer 1, directly on the Pure Proof of Stake consensus protocol, so nobody can cheat. The game implementation takes advantage of all the features introduced in Algorand 2.0 protocol: [**Algorand Standard Assets (ASA)**](https://developer.algorand.org/docs/features/asa/), [**Atomic Transfers (AT)**](https://developer.algorand.org/docs/features/atomic_transfers/) and [**Algorand Smart Contracts (ASC1)**](Algorand Smart Contracts (ASC1)) using Algorand  [**Python SDK**](https://developer.algorand.org/docs/reference/sdks/#python) +  [**PyTeal**](https://github.com/algorand/pyteal). PyTeal is a binding for [**TEAL**](https://developer.algorand.org/docs/features/asc1/teal_overview/), the **stateless bytecode stack based** language for ASC1, in this sens AlgoNim is a truly stateless game.
 
-Through the seamless integration of Algorand Python SDK and PyTeal, AlgoNim automatically writes and initializes a dedicated set of stateless TEAL ASC1s and ASAs for each match. The whole match set-up **takes few seconds** and **costs about 0.8 ALGO**. Considerng that a new ASA + ASC1 architecture is generated for each match, this time/cost performance is quite impressive if compared to other blockchains.
+Through the **seamless interaction** between Algorand Python SDK and PyTeal, AlgoNim **automatically writes** and initializes a **dedicated set of stateless TEAL ASC1s and ASAs** for each match. The whole match set-up **takes few seconds** and **costs about 0.8 ALGO**. Considerng that a new ASA + ASC1 architecture is generated for each match, **this time/cost performance is quite impressive if compared to other blockchains**.
+
+AlgoNim is played entirely from the **command line interface**.
 
 ## AlgoNim rules
 AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is yhe **Opponent**.
@@ -36,9 +38,10 @@ Rules are trivial:
 Alice and Bob may choose **betting** some ALGOs for the match. Further implementations will accept **AlgoNim ASA Score Points** other then the betting reward for the matches, this will enable an **AlgoNim global ranking** too!
 
 ## Install AlgoNim
-AlgoNim consists of 2 Python scripts:
-1. algonim.py
-2. lib_myalgo.py
+### Step 1
+AlgoRithm uses some Python modules, so you need to install them (if not already present):
+
+``
 
 ## AlgoNim architecture
 AlgoNim architecture is composed by following Algorand features:
