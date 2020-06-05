@@ -25,15 +25,15 @@ Through the **seamless interaction** between Algorand Python SDK and PyTeal, Alg
 AlgoNim is played entirely from the **command line interface**.
 
 ## AlgoNim rules
-AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is the **Opponent**.
+AlgoNim is based on **Nim's "normal" single heap variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is the **Opponent**.
 
 Rules are trivial:
-1. The Dealer chooses the number **N** of pieces to be palced on the game table for the match;
+1. The Dealer chooses a heap of **N** pieces to be palced on the game table for the match;
 2. The Dealer chooses the number **M** of pieces that can be removed at the most from the game table in each turn;
 3. Alice and Bob choose who moves first;
 4. On each turn each player removes **at least 1** and **at the most M** pieces from the game table;
 
-**Who removes the last piece form the table wins the match!**
+**Who removes the last piece of the heap form the table wins the match!**
 
 Alice and Bob may choose **betting** some ALGOs for the match. Further implementations will accept **AlgoNim ASA Score Points** other then the betting reward for the matches, this will enable an **AlgoNim global ranking** too!
 
@@ -214,6 +214,7 @@ If one of the player does not act for long time the Bet Escrows Escrows countdow
 2. Freeze the match’s ASAs for anyone but the players;
 3. Automatically destroy the match’s ASAs at the end of the game;
 4. Introduce ASA AlgoNim Score in the Sink as reward for the winner;
+5. Implement a multi-heaps variant;
 
 ## Contact
 For any issue, improvement proposal or comment please reach me out at: cosimo.bassi@gmail.com
