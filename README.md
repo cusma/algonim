@@ -67,6 +67,7 @@ Copy `algonim.py` into your `node` directory (the same of `goal`).
 
 ## How to play
 Playing AlgoNim from your CLI is pretty easy, just ask for help:
+
 **Input**
 ```bash
 $ python3 algonim.py --help
