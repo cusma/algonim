@@ -25,7 +25,7 @@ Through the **seamless interaction** between Algorand Python SDK and PyTeal, Alg
 AlgoNim is played entirely from the **command line interface**.
 
 ## AlgoNim rules
-AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is yhe **Opponent**.
+AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is the **Opponent**.
 
 Rules are trivial:
 1. The Dealer chooses the number **N** of pieces to put on the game table for the match;
