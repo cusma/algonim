@@ -123,3 +123,34 @@ algonim.py join <opponent_mnemonic>
 Match's ASAs Opt-In and betting AT.
 
 ### Step 3 - Play turn (Dealer or Opponent)
+To play a turn the Player must own the AlgoNim ASA Turn. With `algonim.py play` players may play both a regular turn and the last turn, closing the match and claiming the rewards locked in the Bet Escrows Account.
+
+**Input**
+```bash
+algonim.py play <player_mnemonic> <asa_pieces_amount>
+```
+**Output**
+Play Turn Atomic Transfers consisting of:
+1. Asset Send of 1 ASA Turn to the other player;
+2. Asset Send of an amount **P** (1 <= P <= M) ASA Pieces from the Game Table Account to Sink Account;
+
+OR
+
+Play Last Turn Atomic Transfers consisting of:
+1. Asset Send of 1 ASA Turn to the other player;
+2. Asset Send of an amount **P** (1 <= P <= M) ASA Pieces from the Game Table Account to Sink Account;
+3. Asset Send of ASA Pieces **total supply** from Sink Account to its account;
+4. Close Bet Escrow Accounts claiming the betting rewards;
+
+### AlgoNim match's status
+Each player can check the current match's status with `algonim.py play`. 
+
+**Input**
+```bash
+algonim.py status
+```
+**Output**
+Displays ASA Pieces total amount, ASA Pieces currently on the Game Table, Player's Turn
+
+### Bet Escrows expiring
+If one of the player does not act for long time the Bet Escrows Escrows countdown condition is triggered both players can close their Bet Escrow Accounts claiming their own bets back.
