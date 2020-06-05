@@ -192,7 +192,7 @@ Play Last Turn Atomic Transfers consisting of:
 4. Close Bet Escrow Accounts claiming the betting rewards;
 
 ### AlgoNim match's status
-Each player can check the current match's status with `algonim.py play`. 
+Each player can check the current match's status with `algonim.py status`. 
 
 **Input**
 ```bash
