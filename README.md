@@ -106,10 +106,37 @@ In the first step the Dealer sets up the match, generating the ASAs + ASC1s game
 
 **Input**
 ```bash
-algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
-                   [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
+algonim.py setup <dealer_mnemonic> NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 2 20000000 21 4
 ```
 **Output**
+```bash
+              _       _         
+  /\/\   __ _| |_ ___| |__    _ 
+ /    \ / _` | __/ __| '_ \  (_)
+/ /\/\ \ (_| | || (__| | | |  _ 
+\/    \/\__,_|\__\___|_| |_| (_)
+                                
+MATCH DURATION:		 120.0 min
+PIECES ON GAME TABLE:	 21 
+
+RULES:
+1. Players on each turn must remove at least 1 ASA Piece
+2. Players on each turn must remove at most 4 ASA Piece
+3. Who removes the last ASA Piece form the Game Table wins the match!
+
+Player 1 - Dealer:	SVMHAG6PLL27YYGQX4ETEIZ2GHLSO6M5ICU2MBJVKMDT2ERPNSE27OGWIE
+Player 2 - Opponent:	NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 
+
+AlgoNim ASA Pieces ID:	 7329523
+AlgoNim ASA Turn ID:	 7329527 
+
+AlgoNim Sink Account:			      7EUFKLR636O34XW2ZRMTVOCQAXIHUDEEKIY4ZPWAGDRU6A5AONKVN5K4R4
+AlgoNim Game Table Account:		      JBASDWK7MQNRCYUDZBBGR4DFHEGQTCSZQWNUMW4O2XBNON5CFLWALGKJCA
+AlgoNim Bet Escrow Player 1 Account:	PUEKG6EPXF2HMUHB3GTTODXBGUXZX26YK36SJHU7X3ZPQWSKZXUZJAZT3Q
+AlgoNim Bet Escrow Player 2 Account:      W6YG5653UWDU4XTSK2767FHLQOTLXGRG53ZJGV6SEVTSMWOMJOAAMBGTX4
+
+May the best win!
+```
 The scripts generates both the `*.teal` and `*.tealc` ASC1s files and the `algonim.match` in which match's data are packed. The Dealer than sends `algonim.match` to the Opponent.
 
 ### Step 2 - Join the match (Opponent)
@@ -120,6 +147,21 @@ To join the match the Opponent must decide whether accept the Dealer bet proposa
 algonim.py join <opponent_mnemonic>
 ```
 **Output**
+```bash
+      _       __                 ____  _____   _               
+     / \     [  |               |_   \|_   _| (_)              
+    / _ \     | |  .--./)  .--.   |   \ | |   __   _ .--..--.  
+   / ___ \    | | / /'`\;/ .'`\ \ | |\ \| |  [  | [ `.-. .-. | 
+ _/ /   \ \_  | | \ \._//| \__. |_| |_\   |_  | |  | | | | | | 
+|____| |____|[___].',__`  '.__.'|_____|\____|[___][___||__||__]
+                 ( ( __))                                      
+                                                       by cusma
+                                                               
+  Welcome to AlgoNim, the first crypto-mini-game on Algorand!  
+
+The Dealer wants to bet 20.0 ALGO.
+Do you want to join the match? [y/N]
+```
 Match's ASAs Opt-In and betting AT.
 
 ### Step 3 - Play turn (Dealer or Opponent)
@@ -127,9 +169,12 @@ To play a turn the Player must own the AlgoNim ASA Turn. With `algonim.py play` 
 
 **Input**
 ```bash
-algonim.py play <player_mnemonic> <asa_pieces_amount>
+algonim.py play <player_mnemonic> 4
 ```
 **Output**
+```bash
+Removing 4 pieces from the Game table...
+```
 Play Turn Atomic Transfers consisting of:
 1. Asset Send of 1 ASA Turn to the other player;
 2. Asset Send of an amount **P** (1 <= P <= M) ASA Pieces from the Game Table Account to Sink Account;
@@ -147,9 +192,14 @@ Each player can check the current match's status with `algonim.py play`.
 
 **Input**
 ```bash
-algonim.py status
+algonim.py status NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
 ```
 **Output**
+```bash
+MATCH TOTAL PIECES:		21
+PIECES ON THE GAME TABLE:	17
+It's your turn! Play your best move!
+```
 Displays ASA Pieces total amount, ASA Pieces currently on the Game Table, Player's Turn
 
 ### Bet Escrows expiring
