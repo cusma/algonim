@@ -18,10 +18,12 @@ Just to be fair from the very beginning: Nim is a **zero-sum game** and has been
 **So if Alice is a computer, Bob better avoid betting on winning the game.**
 
 ## What's AlgoNim?
-**AlgoNim** is a cryptographic version of Nim that runs on [Algorand](https://algorand.foundation/) blockchain, so nobody can cheat. The game has been implemented using Algorand  [**Python SDK**](https://developer.algorand.org/docs/reference/sdks/#python) +  [**PyTeal**](https://github.com/algorand/pyteal). PyTeal is a binding for [**TEAL**](https://developer.algorand.org/docs/features/asc1/teal_overview/), the **stateless bytecode stack based** language for [Algorand Smart Contracts (ASC1s)](https://developer.algorand.org/docs/asc).
+**AlgoNim** is a cryptographic version of Nim that runs on [Algorand](https://algorand.foundation/) Layer 1, directly on the Pure Proof of Stake consensus protocol, so nobody can cheat. The game implementation takes advantage of all the features introduced in Algorand 2.0 protocol: [**Algorand Standard Assets (ASA)**](https://developer.algorand.org/docs/features/asa/), [**Atomic Transfers (AT)**](https://developer.algorand.org/docs/features/atomic_transfers/) and [**Algorand Smart Contracts (ASC1)**](Algorand Smart Contracts (ASC1)) using Algorand  [**Python SDK**](https://developer.algorand.org/docs/reference/sdks/#python) +  [**PyTeal**](https://github.com/algorand/pyteal). PyTeal is a binding for [**TEAL**](https://developer.algorand.org/docs/features/asc1/teal_overview/), the **stateless bytecode stack based** language for ASC1, in this sens AlgoNim is a truly stateless game.
+
+Through the seamless integration of Algorand Python SDK and PyTeal, AlgoNim automatically writes and initializes a dedicated set of stateless TEAL ASC1s and ASAs for each match. The whole match set-up **takes few seconds** and **costs about 0.8 ALGO**. Considerng that a new ASA + ASC1 architecture is generated for each match, this time/cost performance is quite impressive if compared to other blockchains.
 
 ## AlgoNim rules
-AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she has the role of **Dealer** and sets up the game table.
+AlgoNim is based on **Nim's "normal" variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is yhe **Opponent**.
 
 Rules are trivial:
 1. The Dealer chooses the number **N** of pieces to put on the game table for the match;
@@ -31,7 +33,12 @@ Rules are trivial:
 
 **Who removes the last piece form the table wins the match!**
 
-Alice and Bob may choose betting some ALGO for the match. Further implementations will accept **AlgoNim ASA Score Points** other then the betting reward for the matches, this will enable an **AlgoNim global ranking** too!
+Alice and Bob may choose **betting** some ALGOs for the match. Further implementations will accept **AlgoNim ASA Score Points** other then the betting reward for the matches, this will enable an **AlgoNim global ranking** too!
+
+## Install AlgoNim
+AlgoNim consists of 2 Python scripts:
+1. algonim.py
+2. lib_myalgo.py
 
 ## AlgoNim architecture
 AlgoNim architecture is composed by following Algorand features:
