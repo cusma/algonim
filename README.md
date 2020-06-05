@@ -38,10 +38,68 @@ Rules are trivial:
 Alice and Bob may choose **betting** some ALGOs for the match. Further implementations will accept **AlgoNim ASA Score Points** other then the betting reward for the matches, this will enable an **AlgoNim global ranking** too!
 
 ## Install AlgoNim
-### Step 1
-AlgoRithm uses some Python modules, so you need to install them (if not already present):
+### Step 1 - Python modules
+AlgoRithm uses the following Python 3 modules:
+1. `msgpack`
+2. `docopt`
+3. `algosdk`
+4. `pyteal`
+so you need to install them (if not already present):
 
-``
+```
+$ pip3 install msgpack
+$ pip3 install docopt
+$ pip3 install algosdk
+$ pip3 install pyteal
+```
+
+### Step 2 - Environment setting
+To run AlgoNim smoothly you need to set the following environmental variables:
+`$ export ALGORAND_DATA=/path/to/node/data`
+`$ export PATH=/path/to/node/:$PATH`
+Attention: setting `$ALGORAND_DATA` on your node you choose playing AlgoNim on MainNet, TestNet or BetaNet.
+
+### Step 3 - algonim.py
+Copy `algonim.py` into your `node` directory (the same of `goal`).
+
+## How to play
+Playing AlgoNim from yout CLI is very easy, just ask for help:
+**Input**
+```bash
+$ python3 algonim.py --help
+```
+**Output**
+```bash
+AlgoNim, the first crypto-mini-game on Algorand! (by cusma)
+
+Usage:
+  algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
+                   [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
+  algonim.py join <opponent_mnemonic>
+  algonim.py play <player_mnemonic> <asa_pieces_amount>
+  algonim.py status <player_address>
+  algonim.py [--help]
+
+
+Commands:
+  setup    Dealer sets up a new AlgoNim match.
+  join     Opponent joins the match.
+  play     Play your turn.
+  status   Display current match status.
+
+
+Options:
+  -b <ba> --bet-amount=<ba>     Set the bet amount in microAlgos
+                                [default: 0].
+  -p <ps> --pieces=<ps>         Set the total amount of pieces on game table
+                                [default: 21].
+  -m <mr> --max-removal=<mr>    Set maximum amount of pieces removal
+                                [default: 4].
+  -h --help
+```
+
+### Step 1 - Match set up (Dealer)
+
 
 ## AlgoNim architecture
 AlgoNim architecture is composed by following Algorand features:
@@ -51,6 +109,3 @@ AlgoNim architecture is composed by following Algorand features:
 4. Algorand Smart Contract - Sink
 5. Algorand Smart Contract - Alice's Bet Escrow
 6. Algorand Smart Contract - Bob's Bet Escrow
-
-### AlgoNim ASC1 - Game Table
-prova prova prova
