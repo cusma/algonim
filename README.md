@@ -56,8 +56,10 @@ $ pip3 install pyteal
 
 ### Step 2 - Environment setting
 To run AlgoNim smoothly you need to set the following environmental variables:
-`$ export ALGORAND_DATA=/path/to/node/data`
-`$ export PATH=/path/to/node/:$PATH`
+```bash
+$ export ALGORAND_DATA=/path/to/node/data
+$ export PATH=/path/to/node/:$PATH
+```
 Attention: setting `$ALGORAND_DATA` on your node you choose playing AlgoNim on MainNet, TestNet or BetaNet.
 
 ### Step 3 - algonim.py
