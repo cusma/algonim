@@ -72,7 +72,7 @@ Playing AlgoNim from your CLI is pretty easy, just ask for help:
 $ python3 algonim.py --help
 ```
 **Output**
-```bash
+```
 AlgoNim, the first crypto-mini-game on Algorand! (by cusma)
 
 Usage:
@@ -109,10 +109,10 @@ In the first step the Dealer sets up the match, generating the ASAs + ASC1s game
 
 **Input**
 ```bash
-algonim.py setup <dealer_mnemonic> NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 2 20000000 21 4
+$ algonim.py setup <dealer_mnemonic> NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 2 20000000 21 4
 ```
 **Output**
-```bash
+```
               _       _         
   /\/\   __ _| |_ ___| |__    _ 
  /    \ / _` | __/ __| '_ \  (_)
@@ -147,10 +147,10 @@ To join the match the Opponent must decide whether accept the Dealer bet proposa
 
 **Input**
 ```bash
-algonim.py join <opponent_mnemonic>
+$ algonim.py join <opponent_mnemonic>
 ```
 **Output**
-```bash
+```
       _       __                 ____  _____   _               
      / \     [  |               |_   \|_   _| (_)              
     / _ \     | |  .--./)  .--.   |   \ | |   __   _ .--..--.  
@@ -172,10 +172,10 @@ To play a turn the Player must own the AlgoNim ASA Turn. With `algonim.py play` 
 
 **Input**
 ```bash
-algonim.py play <player_mnemonic> 4
+$ algonim.py play <player_mnemonic> 4
 ```
 **Output**
-```bash
+```
 Removing 4 pieces from the Game table...
 ```
 Play Turn Atomic Transfers consisting of:
@@ -195,10 +195,10 @@ Each player can check the current match's status with `algonim.py play`.
 
 **Input**
 ```bash
-algonim.py status NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
+$ algonim.py status NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
 ```
 **Output**
-```bash
+```
 MATCH TOTAL PIECES:		21
 PIECES ON THE GAME TABLE:	17
 It's your turn! Play your best move!
