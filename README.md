@@ -207,7 +207,7 @@ It's your turn! Play your best move!
 Displays ASA Pieces total amount, ASA Pieces currently on the Game Table, Player's Turn
 
 ### Bet Escrows expiring
-If one of the players does not act for long time the Bet Escrows Escrows countdown condition is triggered, so both players can close their Bet Escrow Accounts claiming their own bets back.
+If one of the players does not act for long time the Bet Escrows countdown condition is triggered, so both players can close their Bet Escrow Accounts claiming their own bets back.
 
 ## Open future implementations
 1. Improve robustness of Bet Escrows (preventing players to stop the game in the middle simply waiting Bet Escrows expiry);
