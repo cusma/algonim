@@ -209,7 +209,7 @@ Displays ASA Pieces total amount, ASA Pieces currently on the Game Table, Player
 ### Bet Escrows expiring
 If one of the player does not act for long time the Bet Escrows Escrows countdown condition is triggered both players can close their Bet Escrow Accounts claiming their own bets back.
 
-## Opens future implementations
+## Open future implementations
 1. Improve robustness of Bet Escrows (preventing players to stop the game in the middle simply waiting Bet Escrows expiry);
 2. Freeze the match’s ASAs for anyone but the players;
 3. Automatically destroy the match’s ASAs at the end of the game;
