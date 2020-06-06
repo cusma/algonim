@@ -582,8 +582,8 @@ def asc1_bet_escrow_teal(algod_client,
 
 def compile_raw_teal(asc1_source, new_asc1_fname):
     '''HELP compile_raw_teal:
-        (PyTealObj, str, str, str) - Returns ASC1 Contract Account and
-        LogicSig. GOAL must be in your PATH, if not so from the CLI enter:
+        (PyTealObj, str) - Returns ASC1 Contract Account and LogicSig.
+        GOAL must be in your PATH, if not so from the CLI enter:
         export PATH=/path/to/node:$PATH
     '''
 
