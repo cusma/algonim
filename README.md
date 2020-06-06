@@ -213,7 +213,7 @@ If one of the players does not act for long time the Bet Escrows countdown condi
 1. Improving robustness of Bet Escrows (preventing players to stop the game in the middle simply waiting Bet Escrows expiry);
 2. Freezing match’s ASAs for anyone but the players;
 3. Automatically destroying match’s ASAs at the end of the game;
-4. Implementing ASA AlgoNim Score in the Sink as reward for the winner;
+4. Adding ASA AlgoNim Score in the Sink from Scores Pool as reward for the winner;
 5. Implementing a "Multi-heaps" variant;
 6. Implementing a "Championship" mode (2 out of 3 matches).
 
