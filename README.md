@@ -22,7 +22,7 @@ Just to be fair from the very beginning: Nim is a **zero-sum game** and has been
 
 Through the **seamless interaction** between Algorand Python SDK and PyTeal, AlgoNim **automatically writes** and initializes a **dedicated set of stateless TEAL ASC1s and ASAs** for each match. The whole match set-up **takes few seconds** and **costs about 0.8 ALGO**. Considerng that a new ASA + ASC1 architecture is generated for each match, **this time/cost performance is quite impressive if compared to other blockchains**.
 
-AlgoNim is played entirely from the **command line interface**.
+AlgoNim is played entirely from the **command line interface**. Find other AlgoNim players: https://t.me/algonim
 
 ## AlgoNim rules
 AlgoNim is based on **Nim's "normal" single heap variant**. Alice is the player who creates the match: she is the **Dealer** and sets up the game table. Bob is the **Opponent**.
