@@ -179,16 +179,16 @@ $ algonim.py play <player_mnemonic> 4
 ```
 Removing 4 pieces from the Game table...
 ```
-Play Turn Atomic Transfers consisting of:
+Play Turn Atomic Transfer consists of:
 1. Asset Send of 1 ASA Turn to the other player;
 2. Asset Send of an amount **P** (1 <= P <= M) ASA Pieces from the Game Table Account to Sink Account;
 
 OR
 
-Play Last Turn Atomic Transfers consisting of:
+Play Last Turn Atomic Transfer consists of:
 1. Asset Send of 1 ASA Turn to the other player;
 2. Asset Send of an amount **P** (1 <= P <= M) ASA Pieces from the Game Table Account to Sink Account;
-3. Asset Send of ASA Pieces **total supply** from Sink Account to its account;
+3. Asset Send of ASA Pieces **total supply** from Sink Account to winner account;
 4. Close Bet Escrow Accounts claiming the betting rewards;
 
 ### AlgoNim match's status
