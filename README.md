@@ -218,4 +218,5 @@ If one of the players does not act for long time the Bet Escrows countdown condi
 6. Implementing a "Championship" mode (2 out of 3 matches).
 
 ## Contact
-For any issue, improvement proposal or comment please reach me out at: cosimo.bassi@gmail.com
+For any issue, improvement proposal or comment please reach me out at: algonim.cusma@gmail.com
+
