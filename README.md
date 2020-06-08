@@ -47,11 +47,11 @@ AlgoNim uses the following Python3 modules:
 
 so you need to install them (if not already present):
 
-```
-$ pip3 install msgpack
-$ pip3 install docopt
-$ pip3 install algosdk
-$ pip3 install pyteal
+```bash
+$ pip3 install --upgrade msgpack
+$ pip3 install --upgrade docopt
+$ pip3 install --upgrade algosdk
+$ pip3 install --upgrade pyteal
 ```
 
 ### Step 2 - Environment setting
@@ -216,6 +216,17 @@ If one of the players does not act for long time the Bet Escrows countdown condi
 4. Adding ASA AlgoNim Score in the Sink from Scores Pool as reward for the winner;
 5. Implementing a "Multi-heaps" variant;
 6. Implementing a "Championship" mode (2 out of 3 matches).
+
+## Troubleshooting
+
+### Issue with `KeyError: 'microalgo_bet_amount`
+
+This issue arises if you do not use the latest version of `msgpack`.
+`msgpack` version 1.0.0 is needed.
+Run: 
+```bash
+$ pip3 install --upgrade msgpack
+```
 
 ## Contact
 For any issue, improvement proposal or comment please reach me out at: algonim.cusma@gmail.com
