@@ -31,6 +31,8 @@ Options:
 import os
 import json
 import msgpack
+import sys
+
 from docopt import docopt
 from algosdk import algod, encoding, logic, mnemonic, transaction
 from pyteal import *
@@ -890,6 +892,11 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
 
 
 # AlgoNim CLI:
+if len(sys.argv) == 1:
+    # display help if no arguments
+    # see https://github.com/docopt/docopt/issues/420#issuecomment-405018014
+    sys.argv.append('--help')
+
 args = docopt(__doc__)
 
 algod_client = create_algod_client()
