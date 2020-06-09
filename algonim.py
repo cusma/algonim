@@ -211,7 +211,9 @@ def main():
         else:
             print("The match is over!")
     else:
-        print("\nError: read AlgoNim '--help'!\n")
+        print("\nError: read AlgoNim '--help'!")
+        print("For any issue or improvement proposal please reach me out at:")
+        print("algonim.cusma@gmail.com\n")
 
 
 if __name__=="__main__":
