@@ -54,8 +54,8 @@ def wait_for_tx_confirmation(algod_client, txid):
             print("Waiting for confirmation...")
             last_round += 1
             algod_client.status_after_block(last_round)
-            
-            
+
+
 def unsigned_asset_send(algod_client, sender, receiver, asset_id, asa_amount,
                         validity_range=1000):
     '''HELP unsigned_asset_send:

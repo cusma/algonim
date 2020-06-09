@@ -49,8 +49,8 @@ def main():
         assert microalgo_bet_amount >= 0
         assert asa_pieces_total > asa_pieces_max_remove + 1
         match_setup(algod_client, dealer_passphrase, addr_opponent,
-                    match_hours_timeout, microalgo_bet_amount, asa_pieces_total,
-                    asa_pieces_max_remove)
+                    match_hours_timeout, microalgo_bet_amount,
+                    asa_pieces_total, asa_pieces_max_remove)
 
     elif args['join']:
         with open("algonim.match", "rb") as f:
@@ -84,7 +84,7 @@ def main():
                 match_data['asa_pieces_id'], 0)
 
             asa_pieces_opt_in_stxn = asa_pieces_opt_in_txn.sign(opponent['sk'])
-            
+
             txid = algod_client.send_transactions([asa_pieces_opt_in_stxn])
             print("\nAlgoNim ASA Piece Opt-In...")
             print("Transaction ID:", txid)
@@ -95,7 +95,7 @@ def main():
                 match_data['asa_turn_id'], 0)
 
             asa_turn_opt_in_stxn = asa_turn_opt_in_txn.sign(opponent['sk'])
-            
+
             txid = algod_client.send_transactions([asa_turn_opt_in_stxn])
             print("\nAlgoNim ASA Turn Opt-In...")
             print("Transaction ID:", txid)
@@ -211,10 +211,8 @@ def main():
         else:
             print("The match is over!")
     else:
-        print("\nError: read AlgoNim '--help'!")
-        print("For any issue or improvement proposal please reach me out at:")
-        print("algonim.cusma@gmail.com\n")
+        print("\nError: read AlgoNim '--help'!\n")
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
