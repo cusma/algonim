@@ -145,7 +145,7 @@ AlgoNim Game Table Account:		      JBASDWK7MQNRCYUDZBBGR4DFHEGQTCSZQWNUMW4O2XBNO
 AlgoNim Bet Escrow Player 1 Account:	      PUEKG6EPXF2HMUHB3GTTODXBGUXZX26YK36SJHU7X3ZPQWSKZXUZJAZT3Q
 AlgoNim Bet Escrow Player 2 Account:          W6YG5653UWDU4XTSK2767FHLQOTLXGRG53ZJGV6SEVTSMWOMJOAAMBGTX4
 
-Send 'algonim.match' file to your opponent to join the match!
+Send 'algonim.match' file to your opponent join the match!
 
 
 May the best win!
