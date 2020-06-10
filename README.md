@@ -65,13 +65,11 @@ Attention: setting `$ALGORAND_DATA` on your node you choose playing AlgoNim on M
 ### Step 3 - AlgoNim files
 Copy following AlgoNim files into your `node` directory (the same of `goal`):
 
-```
-1. algonim.py
-2. algonim_asa.py
-3. algonim_asc1.py
-4. algonim_moves.py
-5. algonim_lib.py
-```
+1. `algonim.py`
+2. `algonim_asa.py`
+3. `algonim_asc1.py`
+4. `algonim_moves.py`
+5. `algonim_lib.py`
 
 ## How to play
 Playing AlgoNim from your CLI is pretty easy, just ask for help:
