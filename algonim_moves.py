@@ -309,5 +309,5 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
           + match_data['dealer_bet_escrow'])
     print("AlgoNim Bet Escrow Player 2 Account:\t"
           + match_data['opponent_bet_escrow'])
-    print("\nSend 'algonim.match' file to your opponent to join the match!\n")
+    print("\nSend 'algonim.match' file to your opponent join the match!\n")
     print("\nMay the best win!\n")
