@@ -6,11 +6,13 @@ Usage:
   algonim.py play <player_mnemonic> <asa_pieces_amount>
   algonim.py status <player_address>
   algonim.py [--help]
+
 Commands:
   setup    Dealer sets up a new AlgoNim match.
   join     Opponent joins the match.
   play     Play your turn.
   status   Display current match status.
+
 Options:
   -b <ba> --bet-amount=<ba>     Set the bet amount in microAlgos
                                 [default: 0].
