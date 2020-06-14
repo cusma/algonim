@@ -9,7 +9,7 @@ def asa_pieces_create(algod_client,
                       asset_creator,
                       total):
     '''HELP asa_pieces_create:
-        (AlgodClient, str, int) - Returns AlgoNim ASA Pieces Asset ID
+        (AlgodClient, dict, int) - Returns AlgoNim ASA Pieces Asset ID
     '''
     assert type(total) == int
     # Get network suggested params for transactions.
@@ -64,7 +64,7 @@ def asa_pieces_create(algod_client,
 def asa_turn_create(algod_client,
                     asset_creator):
     '''HELP asa_turn_create:
-        (AlgodClient, str) - Returns AlgoNim ASA Turn Asset ID
+        (AlgodClient, dict) - Returns AlgoNim ASA Turn Asset ID
     '''
     # Get network suggested params for transactions.
     params = algod_client.suggested_params()
@@ -118,7 +118,7 @@ def asa_turn_create(algod_client,
 def asa_score_create(algod_client,
                      asset_creator):
     '''HELP asa_score_create:
-        (AlgodClient, str) - Returns AlgoNim ASA Score Asset ID
+        (AlgodClient, dict) - Returns AlgoNim ASA Score Asset ID
     '''
     # Get network suggested params for transactions.
     params = algod_client.suggested_params()
