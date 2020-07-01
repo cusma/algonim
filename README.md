@@ -81,22 +81,21 @@ $ python3 algonim.py --help
 **Output**
 ```
 AlgoNim, the first crypto-mini-game on Algorand! (by cusma)
-
 Usage:
   algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
                    [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
   algonim.py join <opponent_mnemonic>
   algonim.py play <player_mnemonic> <asa_pieces_amount>
   algonim.py status <player_address>
+  algonim.py close <player_address>
   algonim.py [--help]
-
 
 Commands:
   setup    Dealer sets up a new AlgoNim match.
   join     Opponent joins the match.
   play     Play your turn.
   status   Display current match status.
-
+  close    Close expired AlgoNim Bet Escrows.
 
 Options:
   -b <ba> --bet-amount=<ba>     Set the bet amount in microAlgos
@@ -116,7 +115,7 @@ In the first step the Dealer sets up the match, generating the ASAs + ASC1s game
 
 **Input**
 ```bash
-$ algonim.py setup <dealer_mnemonic> NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 2 20000000 21 4
+$ python3 algonim.py setup <dealer_mnemonic> NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I 2 20000000 21 4
 ```
 **Output**
 ```
@@ -147,7 +146,6 @@ AlgoNim Bet Escrow Player 2 Account:          W6YG5653UWDU4XTSK2767FHLQOTLXGRG53
 
 Send 'algonim.match' file to your opponent join the match!
 
-
 May the best win!
 
 ```
@@ -158,7 +156,7 @@ To join the match the Opponent must decide whether accept the Dealer bet proposa
 
 **Input**
 ```bash
-$ algonim.py join <opponent_mnemonic>
+$ python3 algonim.py join <opponent_mnemonic>
 ```
 **Output**
 ```
@@ -183,7 +181,7 @@ To play a turn the Player must own the AlgoNim ASA Turn. With `algonim.py play` 
 
 **Input**
 ```bash
-$ algonim.py play <player_mnemonic> 4
+$ python3 algonim.py play <player_mnemonic> 4
 ```
 **Output**
 ```
@@ -202,22 +200,33 @@ Play Last Turn Atomic Transfer consists of:
 4. Close Bet Escrow Accounts claiming the betting rewards;
 
 ### AlgoNim match's status
-Each player can check the current match's status with `algonim.py status`. 
+Each player can check the current match's status with `algonim.py status`:
 
 **Input**
 ```bash
-$ algonim.py status NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
+$ python3 algonim.py status NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
 ```
 **Output**
 ```
 MATCH TOTAL PIECES:		21
 PIECES ON THE GAME TABLE:	17
 It's your turn! Play your best move!
-```
-Displays ASA Pieces total amount, ASA Pieces currently on the Game Table, Player's Turn
 
-### Bet Escrows expiring
-If one of the players does not act for long time the Bet Escrows countdown condition is triggered, so both players can close their Bet Escrow Accounts claiming their own bets back.
+OPPONENT BET ESCROW AMOUNT:	 21000000
+YOUR BET ESCROW AMOUNT:		 21000000
+Your Bet Escrow is still locked. 82 blocks left!
+```
+Displays ASA Pieces total amount for this match, ASA Pieces currently on the Game Table, Player's Turn and Bet Escrows status.
+
+### Bet Escrows closing
+At the end of the match **the winner can claim its own bet amount back** closing the Bet Escrow when it expires with `algonim.py close`:
+
+**Input**
+```bash
+$ python3 algonim.py close NMZRQMXXYSRKVG4ZYJ5OUIN3AOLWJ2ZB5GVIGECAYM6G77D23MPA4BRP6I
+```
+
+If one of the players does not act for long time, both players can close their expired Bet Escrows claiming their own bets back.
 
 ## Open future implementations
 1. Improving robustness of Bet Escrows (preventing players to stop the game in the middle simply waiting Bet Escrows expiry);
@@ -229,7 +238,7 @@ If one of the players does not act for long time the Bet Escrows countdown condi
 
 ## Troubleshooting
 
-### Issue with `KeyError: 'microalgo_bet_amount`
+### Issue with `KeyError: 'microalgo_bet_amount'`
 
 This issue arises if you do not use the latest version of `msgpack`.
 `msgpack` version 1.0.0 is needed.
