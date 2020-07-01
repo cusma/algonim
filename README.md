@@ -212,8 +212,8 @@ MATCH TOTAL PIECES:		21
 PIECES ON THE GAME TABLE:	17
 It's your turn! Play your best move!
 
-OPPONENT BET ESCROW AMOUNT:	 21000000
-YOUR BET ESCROW AMOUNT:		 21000000
+OPPONENT BET ESCROW AMOUNT:	 20100000
+YOUR BET ESCROW AMOUNT:		 20100000
 Your Bet Escrow is still locked. 82 blocks left!
 ```
 Displays ASA Pieces total amount for this match, ASA Pieces currently on the Game Table, Player's Turn and Bet Escrows status.
