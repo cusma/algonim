@@ -229,7 +229,7 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     # TEAL: AlgoNim ASC1 Bet Escrow
     print("")
     print("Dealer writing AlgoNim ASC1 Bet Escrow TEAL for Palyer 1...")
-    asc1_dealer_bet_escrow_source = asc1_bet_escrow_teal(
+    asc1_dealer_bet_escrow_source, dealer_bet_escrow_expiry_block = asc1_bet_escrow_teal(
         algod_client, asa_pieces_id, asa_turn_id, dealer['pk'], opponent['pk'],
         addr_sink, addr_game_table, match_hours_timeout)
 
@@ -238,7 +238,7 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
 
     print("")
     print("Dealer writing AlgoNim ASC1 Bet Escrow TEAL for Palyer 2...")
-    asc1_opponent_bet_escrow_source = asc1_bet_escrow_teal(
+    asc1_opponent_bet_escrow_source, opponent_bet_escrow_expiry_block = asc1_bet_escrow_teal(
         algod_client, asa_pieces_id, asa_turn_id, opponent['pk'], dealer['pk'],
         addr_sink, addr_game_table, match_hours_timeout)
 
@@ -276,6 +276,8 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     match_data['opponent_bet_txn'] = encoding.msgpack_encode(opponent_bet_txn)
     match_data['microalgo_bet_amount'] = microalgo_bet_amount
     match_data['match_hours_timeout'] = match_hours_timeout
+    match_data['dealer_bet_escrow_expiry'] = dealer_bet_escrow_expiry_block
+    match_data['opponent_bet_escrow_expiry'] = opponent_bet_escrow_expiry_block
     match_data_bytes = msgpack.packb(match_data)
     match_data_fname = 'algonim.match'
 
@@ -310,4 +312,18 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("AlgoNim Bet Escrow Player 2 Account:\t"
           + match_data['opponent_bet_escrow'])
     print("\nSend 'algonim.match' file to your opponent join the match!\n")
-    print("\nMay the best win!\n")
+    print("May the best win!\n")
+
+
+def close_bet_escrow(algod_client, addr_bet_escrow, addr_owner,
+                     bet_escrow_lsig):
+    '''HELP close_escrow:
+        (AlgodClient, str, str, LogicSig) - Closes the expired Bet Escrow.
+    '''
+
+    txn0 = unsigned_closeto(algod_client, addr_bet_escrow, addr_owner)
+    lstxn0 = transaction.LogicSigTransaction(txn0, bet_escrow_lsig)
+    txid = algod_client.send_transactions([lstxn0])
+    print("\nClosing expired Bet Escrow: " + addr_bet_escrow)
+    print("Transaction ID: ", txid)
+    wait_for_tx_confirmation(algod_client, txid)

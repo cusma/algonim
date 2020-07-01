@@ -25,25 +25,32 @@ def asc1_sink_teal(algod_client,
 
     # ASC1 Logic:
     # 1. AlgoNim ASA Pieces Opt-In
-    asa_pieces_opt_in = And(Txn.type_enum() == Int(4),
+    asa_pieces_opt_in = And(Global.group_size() == Int(1),
+                            Txn.group_index() == Int(0),
+                            Txn.type_enum() == Int(4),
                             Txn.fee() <= tmpl_fee,
                             Txn.xfer_asset() == asa_pieces_id,
-                            Txn.asset_amount() == Int(0))
+                            Txn.asset_amount() == Int(0),
+                            Txn.asset_close_to() == Global.zero_address())
 
     # 2. Empty Sink
-    empty_sink_alice = And(Txn.group_index() == Int(2),
+    empty_sink_alice = And(Global.group_size() == Int(4),
+                           Txn.group_index() == Int(2),
                            Txn.type_enum() == Int(4),
                            Txn.fee() <= tmpl_fee,
                            Txn.xfer_asset() == asa_pieces_id,
                            Txn.asset_amount() == asa_pieces_total,
-                           Txn.asset_receiver() == addr_alice)
+                           Txn.asset_receiver() == addr_alice,
+                           Txn.asset_close_to() == Global.zero_address())
 
-    empty_sink_bob = And(Txn.group_index() == Int(2),
+    empty_sink_bob = And(Global.group_size() == Int(4),
+                         Txn.group_index() == Int(2),
                          Txn.type_enum() == Int(4),
                          Txn.fee() <= tmpl_fee,
                          Txn.xfer_asset() == asa_pieces_id,
                          Txn.asset_amount() == asa_pieces_total,
-                         Txn.asset_receiver() == addr_bob)
+                         Txn.asset_receiver() == addr_bob,
+                         Txn.asset_close_to() == Global.zero_address())
 
     empty_sink = Or(empty_sink_alice, empty_sink_bob)
     return Or(asa_pieces_opt_in, empty_sink)
@@ -77,42 +84,59 @@ def asc1_game_table_teal(algod_client,
 
     # ASC1 Logic:
     # 1. Dealer
-    asa_pieces_opt_in = And(Gtxn.type_enum(0) == Int(4),
+    asa_pieces_opt_in = And(Global.group_size() == Int(2),
+                            Txn.group_index() == Int(0),
+                            Gtxn.type_enum(0) == Int(4),
                             Gtxn.fee(0) <= tmpl_fee,
                             Gtxn.xfer_asset(0) == asa_pieces_id,
-                            Gtxn.asset_amount(0) == Int(0))
+                            Gtxn.asset_amount(0) == Int(0),
+                            Gtxn.asset_close_to(0) == Global.zero_address())
 
-    game_table_setup = And(Gtxn.type_enum(1) == Int(4),
+    game_table_setup = And(Global.group_size() == Int(2),
+                           Gtxn.type_enum(1) == Int(4),
                            Gtxn.fee(1) <= tmpl_fee,
                            Gtxn.xfer_asset(1) == asa_pieces_id,
                            Gtxn.asset_amount(1) == asa_pieces_total,
-                           Gtxn.sender(1) == addr_alice)
+                           Gtxn.sender(1) == addr_alice,
+                           Gtxn.asset_close_to(1) == Global.zero_address())
 
     dealer = And(asa_pieces_opt_in, game_table_setup)
 
     # 2. Play Turn
-    change_turn_alice_to_bob = And(Gtxn.type_enum(0) == Int(4),
+    play_turn_type = Or(Global.group_size() == Int(2),
+                        Global.group_size() == Int(4))
+
+    change_turn_alice_to_bob = And(play_turn_type,
+                                   Gtxn.type_enum(0) == Int(4),
                                    Gtxn.fee(0) <= tmpl_fee,
                                    Gtxn.xfer_asset(0) == asa_turn_id,
                                    Gtxn.asset_amount(0) == Int(1),
                                    Gtxn.sender(0) == addr_alice,
-                                   Gtxn.asset_receiver(0) == addr_bob)
+                                   Gtxn.asset_receiver(0) == addr_bob,
+                                   Gtxn.asset_close_to(
+                                       0) == Global.zero_address())
 
-    change_turn_bob_to_alice = And(Gtxn.type_enum(0) == Int(4),
+    change_turn_bob_to_alice = And(play_turn_type,
+                                   Gtxn.type_enum(0) == Int(4),
                                    Gtxn.fee(0) <= tmpl_fee,
                                    Gtxn.xfer_asset(0) == asa_turn_id,
                                    Gtxn.asset_amount(0) == Int(1),
                                    Gtxn.sender(0) == addr_bob,
-                                   Gtxn.asset_receiver(0) == addr_alice)
+                                   Gtxn.asset_receiver(0) == addr_alice,
+                                   Gtxn.asset_close_to(
+                                       0) == Global.zero_address())
 
     change_turn = Or(change_turn_alice_to_bob, change_turn_bob_to_alice)
 
-    remove_asa_pieces = And(Gtxn.type_enum(1) == Int(4),
+    remove_asa_pieces = And(play_turn_type,
+                            Txn.group_index() == Int(1),
+                            Gtxn.type_enum(1) == Int(4),
                             Gtxn.fee(1) <= tmpl_fee,
                             Gtxn.xfer_asset(1) == asa_pieces_id,
                             Gtxn.asset_amount(1) >= Int(1),
                             Gtxn.asset_amount(1) <= asa_pieces_max_remove,
-                            Gtxn.asset_receiver(1) == addr_sink)
+                            Gtxn.asset_receiver(1) == addr_sink,
+                            Gtxn.asset_close_to(1) == Global.zero_address())
 
     play_turn = And(change_turn, remove_asa_pieces)
     return Or(dealer, play_turn)
@@ -148,36 +172,44 @@ def asc1_bet_escrow_teal(algod_client,
 
     # AlgoNim Bet Escrow expiration
     match_blocks_duration = int(match_hours_timeout * 3600 // 5)
-    print("AlgoNim Bet Escrows Expiry block:",
-          first_valid + match_blocks_duration)
-    bet_escrow_expiry_block = Int(first_valid + match_blocks_duration)
+    bet_escrow_expiry_block = first_valid + match_blocks_duration
+    print("AlgoNim Bet Escrows Expiry block:", bet_escrow_expiry_block)
+    bet_escrow_expiry_round = Int(bet_escrow_expiry_block)
 
     # ASC1 Constants:
     tmpl_fee = Int(1000)
 
     # ASC1 Logic:
     # 1. Opponent wins
-    change_turn = And(Gtxn.type_enum(0) == Int(4),
+    change_turn = And(Global.group_size() == Int(4),
+                      Gtxn.type_enum(0) == Int(4),
                       Gtxn.fee(0) <= tmpl_fee,
                       Gtxn.xfer_asset(0) == asa_turn_id,
                       Gtxn.asset_amount(0) == Int(1),
                       Gtxn.sender(0) == addr_adversary,
-                      Gtxn.asset_receiver(0) == addr_owner)
+                      Gtxn.asset_receiver(0) == addr_owner,
+                      Gtxn.asset_close_to(0) == Global.zero_address())
 
-    last_move = And(Gtxn.type_enum(1) == Int(4),
+    last_move = And(Global.group_size() == Int(4),
+                    Gtxn.type_enum(1) == Int(4),
                     Gtxn.fee(1) <= tmpl_fee,
                     Gtxn.xfer_asset(1) == asa_pieces_id,
                     Gtxn.sender(1) == addr_game_table,
-                    Gtxn.asset_receiver(1) == addr_sink)
+                    Gtxn.asset_receiver(1) == addr_sink,
+                    Gtxn.asset_close_to(1) == Global.zero_address())
 
-    winner_proof = And(Gtxn.type_enum(2) == Int(4),
+    winner_proof = And(Global.group_size() == Int(4),
+                       Gtxn.type_enum(2) == Int(4),
                        Gtxn.fee(2) <= tmpl_fee,
                        Gtxn.xfer_asset(2) == asa_pieces_id,
                        Gtxn.sender(2) == addr_sink,
                        Gtxn.asset_receiver(2) == addr_adversary,
-                       Gtxn.asset_amount(2) == asa_pieces_total)
+                       Gtxn.asset_amount(2) == asa_pieces_total,
+                       Gtxn.asset_close_to(2) == Global.zero_address())
 
-    collect_reward = And(Gtxn.type_enum(3) == Int(1),
+    collect_reward = And(Global.group_size() == Int(4),
+                         Txn.group_index() == Int(3),
+                         Gtxn.type_enum(3) == Int(1),
                          Gtxn.fee(3) <= tmpl_fee,
                          Gtxn.receiver(3) == addr_adversary,
                          Gtxn.amount(3) == Int(0),
@@ -186,13 +218,21 @@ def asc1_bet_escrow_teal(algod_client,
     win = And(change_turn, last_move, winner_proof, collect_reward)
 
     # 2. Bet Escrow Timeout
-    bet_escrow_timeout = And(Txn.type_enum() == Int(1),
+    bet_escrow_timeout = And(Global.group_size() == Int(1),
+                             Txn.group_index() == Int(0),
+                             Txn.type_enum() == Int(1),
                              Txn.fee() <= tmpl_fee,
-                             Txn.receiver() == Global.zero_address(),
+                             Txn.receiver() == addr_owner,
                              Txn.amount() == Int(0),
-                             Txn.close_remainder_to() == addr_adversary,
-                             Txn.first_valid() > bet_escrow_expiry_block)
-    return Or(win, bet_escrow_timeout)
+                             Txn.close_remainder_to() == addr_owner,
+                             Txn.first_valid() > bet_escrow_expiry_round)
+
+    # 3. Close Bet Escrow
+    close_bet_escrow = And(
+        Cond([Global.group_size() == Int(4), win],
+             [Global.group_size() == Int(1), bet_escrow_timeout]),
+        Int(1) == Int(1))
+    return close_bet_escrow, bet_escrow_expiry_block
 
 
 def compile_raw_teal(asc1_source, new_asc1_fname):
