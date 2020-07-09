@@ -218,19 +218,19 @@ def asc1_bet_escrow_teal(algod_client,
     win = And(change_turn, last_move, winner_proof, collect_reward)
 
     # 2. Bet Escrow Timeout
-    bet_escrow_timeout = And(Global.group_size() == Int(1),
-                             Txn.group_index() == Int(0),
-                             Txn.type_enum() == Int(1),
-                             Txn.fee() <= tmpl_fee,
-                             Txn.receiver() == addr_owner,
-                             Txn.amount() == Int(0),
-                             Txn.close_remainder_to() == addr_owner,
-                             Txn.first_valid() > bet_escrow_expiry_round)
+    timeout = And(Global.group_size() == Int(1),
+                  Txn.group_index() == Int(0),
+                  Txn.type_enum() == Int(1),
+                  Txn.fee() <= tmpl_fee,
+                  Txn.receiver() == addr_owner,
+                  Txn.amount() == Int(0),
+                  Txn.close_remainder_to() == addr_owner,
+                  Txn.first_valid() > bet_escrow_expiry_round)
 
     # 3. Close Bet Escrow
     close_bet_escrow = And(
         Cond([Global.group_size() == Int(4), win],
-             [Global.group_size() == Int(1), bet_escrow_timeout]),
+             [Global.group_size() == Int(1), timeout]),
         Int(1) == Int(1))
     return close_bet_escrow, bet_escrow_expiry_block
 
