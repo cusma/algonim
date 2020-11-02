@@ -1,7 +1,6 @@
 import msgpack
-
+import base64
 from algosdk import encoding, mnemonic, transaction
-
 from algonim_asa import *
 from algonim_asc1 import *
 
@@ -9,10 +8,10 @@ from algonim_asc1 import *
 def bet_atomic_transfer(algod_client, dealer, addr_opponent,
                         addr_dealer_bet_escrow, addr_opponent_bet_escrow,
                         microalgo_bet_amount):
-    '''HELP bet_atomic_transfer:
+    """HELP bet_atomic_transfer:
         (AlgodClient, dict, str, str, str, int) - Returns Bet Atomic Transfer
         partially signed by the Dealer, to be signed by the Opponent.
-    '''
+    """
 
     dealer_bet_txn = unsigned_send(algod_client, dealer['pk'],
                                    addr_dealer_bet_escrow,
@@ -35,21 +34,19 @@ def play_last_turn(algod_client, player, addr_adversary,
                    addr_sink, sink_lsig,
                    addr_adversary_bet_escrow, adversary_bet_escrow_lsig,
                    asa_turn_id, asa_pieces_id,
-                   asa_pieces_amount):
-    '''HELP play_last_turn:
-        (AlgodClient, dict, str, str, str, str, str,  str, str, int, int, int)
-        Play last turn moving ASA Pieces form the Game Table to the Sink
-        and show the winning proof to the opponent's Bet Escrow.
-    '''
-
-    asa_pieces = algod_client.asset_info(asa_pieces_id)
+                   asa_pieces_amount, asa_pieces_total):
+    """HELP play_last_turn:
+        (AlgodClient, dict, str, str, str, str, str,  str, str, int, int, int,
+        int) - Play last turn moving ASA Pieces form the Game Table to the
+        Sink and show the winning proof to the opponent's Bet Escrow.
+    """
 
     txn0 = unsigned_asset_send(algod_client, player['pk'], addr_adversary,
                                asa_turn_id, 1)
     txn1 = unsigned_asset_send(algod_client, addr_game_table, addr_sink,
                                asa_pieces_id, asa_pieces_amount)
     txn2 = unsigned_asset_send(algod_client, addr_sink, player['pk'],
-                               asa_pieces_id, asa_pieces['total'])
+                               asa_pieces_id, asa_pieces_total)
     txn3 = unsigned_closeto(algod_client, addr_adversary_bet_escrow,
                             player['pk'])
 
@@ -65,11 +62,7 @@ def play_last_turn(algod_client, player, addr_adversary,
     lstxn2 = transaction.LogicSigTransaction(txn2, sink_lsig)
     lstxn3 = transaction.LogicSigTransaction(txn3, adversary_bet_escrow_lsig)
 
-    sgtxn = []
-    sgtxn.append(stxn0)
-    sgtxn.append(lstxn1)
-    sgtxn.append(lstxn2)
-    sgtxn.append(lstxn3)
+    sgtxn = [stxn0, lstxn1, lstxn2, lstxn3]
     txid = algod_client.send_transactions(sgtxn)
     print("\nI WON !!! Arrivederci " + addr_adversary)
     print("Transaction ID: ", txid)
@@ -81,15 +74,16 @@ def play_turn(algod_client, player, addr_adversary,
               addr_sink, sink_lsig,
               addr_adversary_bet_escrow, adversary_bet_escrow_lsig,
               asa_turn_id, asa_pieces_id,
-              asa_pieces_max_remove, asa_pieces_amount):
-    '''HELP play_turn:
+              asa_pieces_max_remove, asa_pieces_amount, asa_pieces_total):
+    """HELP play_turn:
         (AlgodClient, dict, str, str, str, str, str,  str, str, int, int, int,
-        int) - Play turn moving ASA Pieces form the Game Table to the Sink
-    '''
+        int) - Play turn moving ASA Pieces form the Game Table to the Sink.
+    """
 
     game_table_info = algod_client.account_info(addr_game_table)
-
-    pieces_on_table = game_table_info['assets'][str(asa_pieces_id)]['amount']
+    pieces_on_table = next(
+        (asa['amount'] for asa in game_table_info['assets'] if
+         asa['asset-id'] == asa_pieces_id), None)
 
     if pieces_on_table > asa_pieces_max_remove:
         txn0 = unsigned_asset_send(algod_client, player['pk'], addr_adversary,
@@ -103,9 +97,7 @@ def play_turn(algod_client, player, addr_adversary,
         txn1.group = gid
         stxn0 = txn0.sign(player['sk'])
         lstxn1 = transaction.LogicSigTransaction(txn1, game_table_lsig)
-        sgtxn = []
-        sgtxn.append(stxn0)
-        sgtxn.append(lstxn1)
+        sgtxn = [stxn0, lstxn1]
         txid = algod_client.send_transactions(sgtxn)
         print("\nRemoving", asa_pieces_amount, "pieces from the Game Table...")
         print("Transaction ID: ", txid)
@@ -116,26 +108,24 @@ def play_turn(algod_client, player, addr_adversary,
                        addr_sink, sink_lsig,
                        addr_adversary_bet_escrow, adversary_bet_escrow_lsig,
                        asa_turn_id, asa_pieces_id,
-                       asa_pieces_amount)
+                       asa_pieces_amount, asa_pieces_total)
 
 
 def match_setup(algod_client, dealer_passphrase, addr_opponent,
                 match_hours_timeout, microalgo_bet_amount, asa_pieces_total,
                 asa_pieces_max_remove):
-    '''HELP match_setup:
+    """HELP match_setup:
         (AlgodClient, str, str, float, int, int, int) - Sets up a new AlgoNim
-        match
-    '''
+        match.
+    """
 
     # AlgoNim Players
     # Palyer 1 (Dealer) - Match Set Up costs about: 0.8 ALGO
-    dealer = {}
-    dealer['pk'] = mnemonic.to_public_key(dealer_passphrase)
-    dealer['sk'] = mnemonic.to_private_key(dealer_passphrase)
+    dealer = {'pk': mnemonic.to_public_key(dealer_passphrase),
+              'sk': mnemonic.to_private_key(dealer_passphrase)}
 
     # Player 2 (Opponent) - Must Opt-In AlgoNim ASAs to play the match
-    opponent = {}
-    opponent['pk'] = addr_opponent
+    opponent = {'pk': addr_opponent}
 
     print("                                                               ")
     print("      _       __                 ____  _____   _               ")
@@ -163,10 +153,12 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("")
     print("Dealer writing AlgoNim ASC1 Sink TEAL for this match...")
     asc1_sink_source = asc1_sink_teal(
-        algod_client, asa_pieces_id, dealer['pk'], opponent['pk'])
+        asa_pieces_total, asa_pieces_id, dealer['pk'], opponent['pk'])
+    asc1_sink_compiled = algod_client.compile(asc1_sink_source)
 
-    sink_lsig, addr_sink = compile_raw_teal(asc1_sink_source,
-                                            "algonim_asc1_sink")
+    sink_lsig = transaction.LogicSig(
+        base64.decodebytes(asc1_sink_compiled['result'].encode()))
+    addr_sink = asc1_sink_compiled['hash']
 
     # Initialize AlgoNim ASC1 Sink Account with ALGO
     print("")
@@ -178,10 +170,8 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("Sink Account AlgoNim ASA Piece Opt-In...")
     sink_opt_in_txn = unsigned_asset_send(
         algod_client, addr_sink, addr_sink, asa_pieces_id, 0)
-
     sink_opt_in_lstxn = transaction.LogicSigTransaction(
         sink_opt_in_txn, sink_lsig)
-
     txid = algod_client.send_transactions([sink_opt_in_lstxn])
     print("Transaction ID:", txid)
     wait_for_tx_confirmation(algod_client, txid)
@@ -190,11 +180,13 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("")
     print("Dealer writing AlgoNim ASC1 Game Table TEAL for this match...")
     asc1_game_table_source = asc1_game_table_teal(
-        algod_client, asa_pieces_id, asa_pieces_max_remove, asa_turn_id,
+        asa_pieces_total, asa_pieces_id, asa_pieces_max_remove, asa_turn_id,
         dealer['pk'], opponent['pk'], addr_sink)
+    asc1_game_table_compiled = algod_client.compile(asc1_game_table_source)
 
-    game_table_lsig, addr_game_table = compile_raw_teal(
-        asc1_game_table_source, "algonim_asc1_game_table")
+    game_table_lsig = transaction.LogicSig(
+        base64.decodebytes(asc1_game_table_compiled['result'].encode()))
+    addr_game_table = asc1_game_table_compiled['hash']
 
     # Initialize AlgoNim ASC1 Game Table Account with ALGO
     print("")
@@ -206,10 +198,9 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("Dealer distributing ASA Pieces on the Game Table...")
     gt_opt_in_txn = unsigned_asset_send(
         algod_client, addr_game_table, addr_game_table, asa_pieces_id, 0)
-
     deal_pieces_txn = unsigned_asset_send(
         algod_client, dealer['pk'], addr_game_table, asa_pieces_id,
-        algod_client.asset_info(asa_pieces_id)['total'])
+        asa_pieces_total)
 
     # Dealer Gorup Transaction
     dealer_gid = transaction.calculate_group_id([gt_opt_in_txn,
@@ -219,9 +210,7 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     gt_opt_in_lstxn = transaction.LogicSigTransaction(gt_opt_in_txn,
                                                       game_table_lsig)
     deal_pieces_stxn = deal_pieces_txn.sign(dealer['sk'])
-    dealer_sgtxn = []
-    dealer_sgtxn.append(gt_opt_in_lstxn)
-    dealer_sgtxn.append(deal_pieces_stxn)
+    dealer_sgtxn = [gt_opt_in_lstxn, deal_pieces_stxn]
     txid = algod_client.send_transactions(dealer_sgtxn)
     print("Transaction ID: ", txid)
     wait_for_tx_confirmation(algod_client, txid)
@@ -230,25 +219,34 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("")
     print("Dealer writing AlgoNim ASC1 Bet Escrow TEAL for Palyer 1...")
     asc1_dealer_bet_escrow_source, dealer_bet_escrow_expiry_block = asc1_bet_escrow_teal(
-        algod_client, asa_pieces_id, asa_turn_id, dealer['pk'], opponent['pk'],
-        addr_sink, addr_game_table, match_hours_timeout)
+        algod_client, asa_pieces_total, asa_pieces_id, asa_turn_id,
+        dealer['pk'], opponent['pk'], addr_sink, addr_game_table,
+        match_hours_timeout)
+    asc1_dealer_bet_escrow_compiled = algod_client.compile(
+        asc1_dealer_bet_escrow_source)
 
-    dealer_bet_escrow_lsig, addr_dealer_bet_escrow = compile_raw_teal(
-        asc1_dealer_bet_escrow_source, "algonim_asc1_dealer_bet_escrow")
+    dealer_bet_escrow_lsig = transaction.LogicSig(
+        base64.decodebytes(asc1_dealer_bet_escrow_compiled['result'].encode()))
+    addr_dealer_bet_escrow = asc1_dealer_bet_escrow_compiled['hash']
 
     print("")
     print("Dealer writing AlgoNim ASC1 Bet Escrow TEAL for Palyer 2...")
     asc1_opponent_bet_escrow_source, opponent_bet_escrow_expiry_block = asc1_bet_escrow_teal(
-        algod_client, asa_pieces_id, asa_turn_id, opponent['pk'], dealer['pk'],
-        addr_sink, addr_game_table, match_hours_timeout)
+        algod_client, asa_pieces_total, asa_pieces_id, asa_turn_id,
+        opponent['pk'], dealer['pk'], addr_sink, addr_game_table,
+        match_hours_timeout)
+    asc1_opponent_bet_escrow_compiled = algod_client.compile(
+        asc1_opponent_bet_escrow_source)
 
-    opponent_bet_escrow_lsig, addr_opponent_bet_escrow = compile_raw_teal(
-        asc1_opponent_bet_escrow_source, "algonim_asc1_opponent_bet_escrow")
+    opponent_bet_escrow_lsig = transaction.LogicSig(
+        base64.decodebytes(asc1_opponent_bet_escrow_compiled['result'].encode()))
+    addr_opponent_bet_escrow = asc1_opponent_bet_escrow_compiled['hash']
 
     # Initialize AlgoNim ASC1 Escrows with 0.1 ALGO
     print("")
     print("Initializing Bet Escrow Accounts...")
     send(algod_client, dealer, addr_dealer_bet_escrow, 100000)
+    print("")
     send(algod_client, dealer, addr_opponent_bet_escrow, 100000)
 
     # Creating Bet Atomic Transfer to be signed by the Opponent
@@ -293,8 +291,7 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
     print("\/    \/\__,_|\__\___|_| |_| (_)")
     print("                                ")
     print("MATCH DURATION:\t\t", match_data['match_hours_timeout'] * 60, "min")
-    print("PIECES ON GAME TABLE:\t", algod_client.asset_info(
-        match_data['asa_pieces_id'])['total'], "\n")
+    print("PIECES ON GAME TABLE:\t", asa_pieces_total, "\n")
     print("RULES:")
     print("1. Players on each turn must remove at least 1 ASA Piece")
     print("2. Players on each turn must remove at most",
@@ -317,9 +314,9 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
 
 def close_bet_escrow(algod_client, addr_bet_escrow, addr_owner,
                      bet_escrow_lsig):
-    '''HELP close_escrow:
+    """HELP close_escrow:
         (AlgodClient, str, str, LogicSig) - Closes the expired Bet Escrow.
-    '''
+    """
 
     txn0 = unsigned_closeto(algod_client, addr_bet_escrow, addr_owner)
     lstxn0 = transaction.LogicSigTransaction(txn0, bet_escrow_lsig)
