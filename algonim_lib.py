@@ -1,13 +1,17 @@
 import os
-
-from algosdk import algod, transaction
+import json
+from algosdk import v2client, transaction
 
 
 def create_algod_client(print_status=False, print_version=False):
-    '''HELP create_algod_client:
-        (boo, bool) - Returns an Algod Client and shows network status and
-        version. $ALGORAND_DATA must be set as environment variable'''
+    """HELP create_algod_client:
+        (bool, bool) - Returns an AlgodClient using local Node showing
+        network status and version. $ALGORAND_DATA must be set as environment
+        variable.
+    """
+
     ALGORAND_DATA = os.environ.get("ALGORAND_DATA")
+
     if not ALGORAND_DATA:
         raise Exception("Set the environment variable $ALGORAND_DATA from the "
                         + "CLI entering: export ALGORAND_DATA=/path/to/data/")
@@ -21,18 +25,17 @@ def create_algod_client(print_status=False, print_version=False):
         algod_address = file.read().splitlines()
         file.close()
     algod_address = 'http://' + algod_address[0]
-    algod_client = algod.AlgodClient(algod_token, algod_address)
+
+    algod_client = v2client.algod.AlgodClient(algod_token, algod_address)
 
     try:
-        status = algod_client.status()
-        versions = algod_client.versions()
         if print_status:
             print("||-=-=-{  Algorand Network Status  }-=-=-||")
-            print(json.dumps(status, indent=4))
+            print(json.dumps(algod_client.status(), indent=4))
             print("")
         if print_version:
             print("||-=-=-{  Algorand Network Version }-=-=-||")
-            print(json.dumps(versions, indent=4))
+            print(json.dumps(algod_client.versions(), indent=4))
             print("")
     except Exception as e:
         print(e)
@@ -40,15 +43,16 @@ def create_algod_client(print_status=False, print_version=False):
 
 
 def wait_for_tx_confirmation(algod_client, txid):
-    '''HELP wait_for_tx_confirmation:
-        (class, class) - Wait for TX confirmation and displays confirmation
-        round'''
-    last_round = algod_client.status().get('lastRound')
+    """HELP wait_for_tx_confirmation:
+        (AlgodClient, obj) - Wait for TX confirmation and displays confirmation
+        round.
+    """
+    last_round = algod_client.status().get('last-round')
     while True:
         txinfo = algod_client.pending_transaction_info(txid)
-        if txinfo.get('round') and txinfo.get('round') > 0:
+        if txinfo.get('confirmed-round') and txinfo.get('confirmed-round') > 0:
             print("Transaction {} confirmed in round {}.".format(
-                txid, txinfo.get('round')))
+                txid, txinfo.get('confirmed-round')))
             break
         else:
             print("Waiting for confirmation...")
@@ -58,17 +62,17 @@ def wait_for_tx_confirmation(algod_client, txid):
 
 def unsigned_asset_send(algod_client, sender, receiver, asset_id, asa_amount,
                         validity_range=1000):
-    '''HELP unsigned_asset_send:
+    """HELP unsigned_asset_send:
         (AlgodClient, dict, str, int, int, int) - Returns an unsigned
         AssetTransferTxn.
-    '''
+    """
     assert type(asa_amount) == int and validity_range <= 1000
     # Get network suggested params for transactions.
     params = algod_client.suggested_params()
-    first_valid = params.get("lastRound")
+    first_valid = params.first
     last_valid = first_valid + validity_range
-    gh = params.get("genesishashb64")
-    min_fee = params.get("minFee")
+    gh = params.gh
+    min_fee = params.min_fee
     assert min_fee <= 1000
     data = {
         "sender": sender,
@@ -86,16 +90,16 @@ def unsigned_asset_send(algod_client, sender, receiver, asset_id, asa_amount,
 
 def unsigned_send(algod_client, addr_sender, addr_receiver, microalgo_amount,
                   validity_range=1000):
-    '''HELP unsigned_send:
+    """HELP unsigned_send:
         (AlgodClient, str, str, int, int) - Returns an unsigned PaymentTxn.
-    '''
+    """
     assert type(microalgo_amount) == int and validity_range <= 1000
     # Get network suggested params for transactions.
     params = algod_client.suggested_params()
-    first_valid = params.get("lastRound")
+    first_valid = params.first
     last_valid = first_valid + validity_range
-    gh = params.get("genesishashb64")
-    min_fee = params.get("minFee")
+    gh = params.gh
+    min_fee = params.min_fee
     assert min_fee <= 1000
 
     data = {
@@ -113,16 +117,16 @@ def unsigned_send(algod_client, addr_sender, addr_receiver, microalgo_amount,
 
 def send(algod_client, sender, addr_receiver, microalgo_amount,
          validity_range=1000):
-    '''HELP send:
+    """HELP send:
         (AlgodClient, dict, str, int, int) - Executes a PaymentTxn.
-    '''
+    """
     assert type(microalgo_amount) == int and validity_range <= 1000
     # Get network suggested params for transactions.
     params = algod_client.suggested_params()
-    first_valid = params.get("lastRound")
+    first_valid = params.first
     last_valid = first_valid + validity_range
-    gh = params.get("genesishashb64")
-    min_fee = params.get("minFee")
+    gh = params.gh
+    min_fee = params.min_fee
     assert min_fee <= 1000
 
     data = {
@@ -144,16 +148,17 @@ def send(algod_client, sender, addr_receiver, microalgo_amount,
 
 
 def unsigned_closeto(algod_client, sender, closeto, validity_range=1000):
-    '''HELP unsigned_closeto:
-        (AlgodClient, dict, str, int) - Closes an Account.
-    '''
+    """HELP unsigned_closeto:
+        (AlgodClient, dict, str, int) - Returns an unsigned PaymentTxn with
+        close-to account.
+    """
     # Get network suggested params for transactions.
     assert validity_range <= 1000
     params = algod_client.suggested_params()
-    first_valid = params.get("lastRound")
+    first_valid = params.first
     last_valid = first_valid + validity_range
-    gh = params.get("genesishashb64")
-    min_fee = params.get("minFee")
+    gh = params.gh
+    min_fee = params.min_fee
     assert min_fee <= 1000
 
     data = {

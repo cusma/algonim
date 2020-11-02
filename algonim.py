@@ -1,4 +1,4 @@
-'''AlgoNim, the first crypto-mini-game on Algorand! (by cusma)
+"""AlgoNim, the first crypto-mini-game on Algorand! (by cusma)
 Usage:
   algonim.py setup <dealer_mnemonic> <opponent_address> <hours_duration>
                    [--bet-amount=<ba>] [--pieces=<ps>] [--max-removal=<mr>]
@@ -23,25 +23,27 @@ Options:
   -m <mr> --max-removal=<mr>    Set maximum amount of pieces removal
                                 [default: 4].
   -h --help
-'''
-
+"""
 
 import sys
-
 from docopt import docopt
-
 from algonim_moves import *
 
 
 def main():
     if len(sys.argv) == 1:
-        # Display help if no arguments
-        # See https://github.com/docopt/docopt/issues/420#issuecomment-405018014
+        # Display help if no arguments, see:
+        # https://github.com/docopt/docopt/issues/420#issuecomment-405018014
         sys.argv.append('--help')
 
     args = docopt(__doc__)
 
     algod_client = create_algod_client()
+    try:
+        algod_client.compile(
+            compileTeal(Global.group_size() == Int(1), Mode.Signature))
+    except Exception:
+        raise ErrAlgodClientCompile
 
     if args['setup']:
         dealer_passphrase = args['<dealer_mnemonic>']
@@ -62,9 +64,8 @@ def main():
             f.close()
         match_data = msgpack.unpackb(match_data_bytes)
 
-        opponent = {}
-        opponent['pk'] = mnemonic.to_public_key(args['<opponent_mnemonic>'])
-        opponent['sk'] = mnemonic.to_private_key(args['<opponent_mnemonic>'])
+        opponent = {'pk': mnemonic.to_public_key(args['<opponent_mnemonic>']),
+                    'sk': mnemonic.to_private_key(args['<opponent_mnemonic>'])}
         microalgo_bet_amount = match_data['microalgo_bet_amount']
 
         print("                                                               ")
@@ -78,8 +79,10 @@ def main():
         print("                                                       by cusma")
         print("                                                               ")
         print("  Welcome to AlgoNim, the first crypto-mini-game on Algorand!  ")
+
         print("")
-        print("The Dealer wants to bet", microalgo_bet_amount * 10 ** -6, "ALGO.")
+        print("The Dealer wants to bet", microalgo_bet_amount * 10 ** -6,
+              "ALGO.")
         join = input("Do you want to join the match? [y/N]")
         if join == 'y':
             # AlgoNim ASAs Opt-In
@@ -111,13 +114,18 @@ def main():
             opponent_bet_txn = encoding.msgpack_decode(
                 match_data['opponent_bet_txn'])
             opponent_bet_stxn = opponent_bet_txn.sign(opponent['sk'])
-            bet_sgtxn = []
-            bet_sgtxn.append(dealer_bet_stxn)
-            bet_sgtxn.append(opponent_bet_stxn)
+            bet_sgtxn = [dealer_bet_stxn, opponent_bet_stxn]
             txid = algod_client.send_transactions(bet_sgtxn)
             print("\nPlayers betting...")
             print("Transaction ID: ", txid)
             wait_for_tx_confirmation(algod_client, txid)
+
+            dealer_info = algod_client.account_info(match_data['dealer'])
+            asa_pieces_total = next(
+                (asa['params']['total'] for asa in
+                 dealer_info['created-assets'] if
+                 asa['index'] == match_data['asa_pieces_id']), None)
+
             print("                                ")
             print("              _       _         ")
             print("  /\/\   __ _| |_ ___| |__    _ ")
@@ -127,8 +135,7 @@ def main():
             print("                                ")
             print("MATCH DURATION:\t\t",
                   match_data['match_hours_timeout'] * 60, "min")
-            print("PIECES ON GAME TABLE:\t", algod_client.asset_info(
-                match_data['asa_pieces_id'])['total'], "\n")
+            print("PIECES ON GAME TABLE:\t", asa_pieces_total, "\n")
             print("RULES:")
             print("1. Players on each turn must remove at least 1 ASA Piece")
             print("2. Players on each turn must remove at most",
@@ -154,9 +161,8 @@ def main():
             match_data_bytes = f.read()
             f.close()
         match_data = msgpack.unpackb(match_data_bytes)
-        player = {}
-        player['pk'] = mnemonic.to_public_key(args['<player_mnemonic>'])
-        player['sk'] = mnemonic.to_private_key(args['<player_mnemonic>'])
+        player = {'pk': mnemonic.to_public_key(args['<player_mnemonic>']),
+                  'sk': mnemonic.to_private_key(args['<player_mnemonic>'])}
         asa_pieces_amount = int(args['<asa_pieces_amount>'])
 
         asa_pieces_id = match_data['asa_pieces_id']
@@ -171,6 +177,11 @@ def main():
         dealer_bet_escrow_lsig = encoding.msgpack_decode(
             match_data['dealer_bet_escrow_lsig'])
 
+        dealer_info = algod_client.account_info(match_data['dealer'])
+        asa_pieces_total = next(
+            (asa['params']['total'] for asa in dealer_info['created-assets'] if
+             asa['index'] == match_data['asa_pieces_id']), None)
+
         if player['pk'] == match_data['dealer']:
             addr_adversary = match_data['opponent']
             addr_adversary_bet_escrow = match_data['opponent_bet_escrow']
@@ -181,7 +192,8 @@ def main():
                       addr_sink, sink_lsig,
                       addr_adversary_bet_escrow, adversary_bet_escrow_lsig,
                       asa_turn_id, asa_pieces_id,
-                      asa_pieces_max_remove, asa_pieces_amount)
+                      asa_pieces_max_remove, asa_pieces_amount,
+                      asa_pieces_total)
         else:
             addr_adversary = match_data['dealer']
             addr_adversary_bet_escrow = match_data['dealer_bet_escrow']
@@ -192,38 +204,43 @@ def main():
                       addr_sink, sink_lsig,
                       addr_adversary_bet_escrow, adversary_bet_escrow_lsig,
                       asa_turn_id, asa_pieces_id,
-                      asa_pieces_max_remove, asa_pieces_amount)
+                      asa_pieces_max_remove, asa_pieces_amount,
+                      asa_pieces_total)
 
     elif args['status']:
         with open("algonim.match", "rb") as f:
             match_data_bytes = f.read()
             f.close()
         match_data = msgpack.unpackb(match_data_bytes)
-        player_stat = algod_client.account_info(args['<player_address>'])
-        game_table_stat = algod_client.account_info(match_data['game_table'])
-        asa_pieces_stat = algod_client.asset_info(match_data['asa_pieces_id'])
-        dealer_bet_escrow_stat = algod_client.account_info(
+        player_info = algod_client.account_info(args['<player_address>'])
+        game_table_info = algod_client.account_info(match_data['game_table'])
+        dealer_info = algod_client.account_info(match_data['dealer'])
+        asa_pieces_total = next(
+            (asa['params']['total'] for asa in dealer_info['created-assets'] if
+             asa['index'] == match_data['asa_pieces_id']), None)
+        pieces_on_table = next(
+            (asa['amount'] for asa in game_table_info['assets'] if
+             asa['asset-id'] == match_data['asa_pieces_id']), None)
+
+        dealer_bet_escrow_info = algod_client.account_info(
             match_data['dealer_bet_escrow'])
-        opponent_bet_escrow_stat = algod_client.account_info(
+        opponent_bet_escrow_info = algod_client.account_info(
             match_data['opponent_bet_escrow'])
 
-        print("\nMATCH TOTAL PIECES:\t\t" + str(asa_pieces_stat['total']))
-        print("PIECES ON THE GAME TABLE:\t"
-              + str(game_table_stat['assets'][str(
-                  match_data['asa_pieces_id'])]['amount']))
+        print("\nMATCH TOTAL PIECES:\t\t" + str(asa_pieces_total))
+        print("PIECES ON THE GAME TABLE:\t" + str(pieces_on_table))
 
-        if game_table_stat['assets'][str(match_data['asa_pieces_id'])][
-                'amount'] != 0:
-            if player_stat['assets'][str(match_data['asa_turn_id'])][
-                    'amount'] == 1:
+        if pieces_on_table != 0:
+            if next((asa['amount'] for asa in player_info['assets'] if
+                     asa['asset-id'] == match_data['asa_turn_id']), None) == 1:
                 print("It's your turn! Play your best move!")
             else:
                 print("Your opponent is playing the turn...")
         else:
             print("The match is over!")
 
-        dealer_bet_escrow_amount = dealer_bet_escrow_stat['amount']
-        opponent_bet_escrow_amount = opponent_bet_escrow_stat['amount']
+        dealer_bet_escrow_amount = dealer_bet_escrow_info['amount']
+        opponent_bet_escrow_amount = opponent_bet_escrow_info['amount']
 
         if args['<player_address>'] == match_data['dealer']:
             print("\nOPPONENT BET ESCROW AMOUNT:\t",
@@ -232,14 +249,14 @@ def main():
                   dealer_bet_escrow_amount)
             if dealer_bet_escrow_amount != 0:
                 blockchain_params = algod_client.suggested_params()
-                last_round = blockchain_params.get('lastRound')
+                last_round = blockchain_params.first
                 bet_escrow_expiry = match_data[
-                    'dealer_bet_escrow_expiry'] - last_round
+                                        'dealer_bet_escrow_expiry'] - last_round
                 if bet_escrow_expiry > 0:
                     print("Your Bet Escrow is still locked.",
                           bet_escrow_expiry, "blocks left!\n")
                 else:
-                    print("Your Bet Escrow expired!" +
+                    print("Your Bet Escrow expired! " +
                           "You can claim your bet back.")
         elif args['<player_address>'] == match_data['opponent']:
             print("\nOPPONENT BET ESCROW AMOUNT:\t",
@@ -248,15 +265,15 @@ def main():
                   opponent_bet_escrow_amount)
             if opponent_bet_escrow_amount != 0:
                 blockchain_params = algod_client.suggested_params()
-                last_round = blockchain_params.get('lastRound')
+                last_round = blockchain_params.first
                 bet_escrow_expiry = match_data[
-                    'opponent_bet_escrow_expiry'] - last_round
+                                        'opponent_bet_escrow_expiry'] - last_round
                 if bet_escrow_expiry > 0 and opponent_bet_escrow_amount != 0:
                     print("Your Bet Escrow is still locked.",
                           bet_escrow_expiry, "blocks left!\n")
                 else:
-                    print("Your Bet Escrow expired! "
-                          + "You can claim your bet back.")
+                    print("Your Bet Escrow expired! " +
+                          "You can claim your bet back.")
         else:
             print("Invalid player address for this match!")
 
@@ -284,6 +301,17 @@ def main():
 
     else:
         print("\nError: read AlgoNim '--help'!\n")
+
+
+class ErrAlgodClientCompile(Exception):
+    def __init__(self):
+        Exception.__init__(
+            self, "\n\nAlgoNim failed to compile TEAL source code. Please:\n\n"
+                  + "\t1. Go to your Algorand node data folder\n"
+                  + "\t2. Copy 'config.json.example' as 'config.json'\n"
+                  + "\t3. Open and edit 'config.json'\n"
+                  + "\t4. Set \"EnableDeveloperAPI\" to true and save\n"
+                  + "\t5. Restart your Algorand node: goal node restart\n")
 
 
 if __name__ == "__main__":
