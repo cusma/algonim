@@ -50,7 +50,7 @@ so you need to install them (if not already present):
 ```bash
 $ pip3 install --upgrade msgpack
 $ pip3 install --upgrade docopt
-$ pip3 install --upgrade algosdk
+$ pip3 install --upgrade py-algorand-sdk
 $ pip3 install --upgrade pyteal
 ```
 
