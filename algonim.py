@@ -68,17 +68,21 @@ def main():
                     'sk': mnemonic.to_private_key(args['<opponent_mnemonic>'])}
         microalgo_bet_amount = match_data['microalgo_bet_amount']
 
-        print("                                                               ")
-        print("      _       __                 ____  _____   _               ")
-        print("     / \     [  |               |_   \|_   _| (_)              ")
-        print("    / _ \     | |  .--./)  .--.   |   \ | |   __   _ .--..--.  ")
-        print("   / ___ \    | | / /'`\;/ .'`\ \ | |\ \| |  [  | [ `.-. .-. | ")
-        print(" _/ /   \ \_  | | \ \._//| \__. |_| |_\   |_  | |  | | | | | | ")
-        print("|____| |____|[___].',__`  '.__.'|_____|\____|[___][___||__||__]")
-        print("                 ( ( __))                                      ")
-        print("                                                       by cusma")
-        print("                                                               ")
-        print("  Welcome to AlgoNim, the first crypto-mini-game on Algorand!  ")
+        print(
+            r"""
+            
+                  _       __                 ____  _____   _               
+                 / \     [  |               |_   \|_   _| (_)              
+                / _ \     | |  .--./)  .--.   |   \ | |   __   _ .--..--.  
+               / ___ \    | | / /'`\;/ .'`\ \ | |\ \| |  [  | [ `.-. .-. | 
+             _/ /   \ \_  | | \ \._//| \__. |_| |_\   |_  | |  | | | | | | 
+            |____| |____|[___].',__`  '.__.'|_____|\____|[___][___||__||__]
+                             ( ( __))                                      
+                                                                   by cusma
+                                                                           
+              Welcome to AlgoNim, the first crypto-mini-game on Algorand!  
+            """
+        )
 
         print("")
         print("The Dealer wants to bet", microalgo_bet_amount * 10 ** -6,
@@ -125,14 +129,17 @@ def main():
                 (asa['params']['total'] for asa in
                  dealer_info['created-assets'] if
                  asa['index'] == match_data['asa_pieces_id']), None)
-
-            print("                                ")
-            print("              _       _         ")
-            print("  /\/\   __ _| |_ ___| |__    _ ")
-            print(" /    \ / _` | __/ __| '_ \  (_)")
-            print("/ /\/\ \ (_| | || (__| | | |  _ ")
-            print("\/    \/\__,_|\__\___|_| |_| (_)")
-            print("                                ")
+            
+            print(
+                r"""
+                
+                              _       _         
+                  /\/\   __ _| |_ ___| |__    _ 
+                 /    \ / _` | __/ __| '_ \  (_)
+                / /\/\ \ (_| | || (__| | | |  _ 
+                \/    \/\__,_|\__\___|_| |_| (_)
+                """
+            )
             print("MATCH DURATION:\t\t",
                   match_data['match_hours_timeout'] * 60, "min")
             print("PIECES ON GAME TABLE:\t", asa_pieces_total, "\n")
