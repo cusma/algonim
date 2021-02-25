@@ -250,3 +250,7 @@ $ pip3 install --upgrade msgpack
 ## Contact
 For any issue, improvement proposal or comment please reach me out at: algonim.cusma@gmail.com
 
+If you enjoyed AlgoNim or fund it useful as free and opensoruce learning example, consider tipping its Dev:
+
+`XODGWLOMKUPTGL3ZV53H3GZZWMCTJVQ5B2BZICFD3STSLA2LPSH6V6RW3I`
+
