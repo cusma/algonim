@@ -64,8 +64,9 @@ def main():
             f.close()
         match_data = msgpack.unpackb(match_data_bytes)
 
-        opponent = {'pk': mnemonic.to_public_key(args['<opponent_mnemonic>']),
-                    'sk': mnemonic.to_private_key(args['<opponent_mnemonic>'])}
+        opponent_private_key = mnemonic.to_private_key(args['<opponent_mnemonic>'])
+        opponent = {'pk': address_from_private_key(opponent_private_key),
+                    'sk': opponent_private_key}
         microalgo_bet_amount = match_data['microalgo_bet_amount']
 
         print("                                                               ")
@@ -161,8 +162,9 @@ def main():
             match_data_bytes = f.read()
             f.close()
         match_data = msgpack.unpackb(match_data_bytes)
-        player = {'pk': mnemonic.to_public_key(args['<player_mnemonic>']),
-                  'sk': mnemonic.to_private_key(args['<player_mnemonic>'])}
+        player_private_key = mnemonic.to_private_key(args['<player_mnemonic>'])
+        player = {'pk': address_from_private_key(player_private_key),
+                  'sk': player_private_key}
         asa_pieces_amount = int(args['<asa_pieces_amount>'])
 
         asa_pieces_id = match_data['asa_pieces_id']
