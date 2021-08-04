@@ -1,6 +1,7 @@
 import msgpack
 import base64
 from algosdk import encoding, mnemonic, transaction
+from algosdk.account import address_from_private_key
 from algonim_asa import *
 from algonim_asc1 import *
 
@@ -121,8 +122,9 @@ def match_setup(algod_client, dealer_passphrase, addr_opponent,
 
     # AlgoNim Players
     # Palyer 1 (Dealer) - Match Set Up costs about: 0.8 ALGO
-    dealer = {'pk': mnemonic.to_public_key(dealer_passphrase),
-              'sk': mnemonic.to_private_key(dealer_passphrase)}
+    dealer_private_key = mnemonic.to_private_key(dealer_passphrase)
+    dealer = {'pk': address_from_private_key(dealer_private_key),
+              'sk': dealer_private_key}
 
     # Player 2 (Opponent) - Must Opt-In AlgoNim ASAs to play the match
     opponent = {'pk': addr_opponent}
